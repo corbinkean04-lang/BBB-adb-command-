@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WebADB Control Center</title>
+  <meta name="description" content="Browser-based Android and Quest control center." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <main class="shell">
+    <header class="hero">
+      <div class="eyebrow"><span class="pulse"></span> WEBUSB · ADB · NO INSTALL</div>
+      <h1>WebADB <span>Control Center</span></h1>
+      <p>Connect an Android or Quest device, then run your tools directly from the browser.</p>
+    </header>
+
+    <section class="panel connection">
+      <div class="panel-heading">
+        <div>
+          <div class="section-title"><span class="glyph">⌁</span> Device Link</div>
+          <div class="muted" id="deviceStatus">No device attached over USB</div>
+        </div>
+        <div class="status-row">
+          <span class="status-pill" id="statusPill">DISCONNECTED</span>
+          <button class="button primary" id="connectBtn">Connect device</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="action-grid">
+      <button class="action-card enable" id="enableBtn">
+        <span class="action-icon">ϟ</span>
+        <strong>ENABLE TWEAK</strong>
+        <small>headlock sleep · zero animations · 90 Hz lock</small>
+      </button>
+      <button class="action-card disable" id="disableBtn">
+        <span class="action-icon">↻</span>
+        <strong>DISABLE / RESET</strong>
+        <small>animations 1.0 · perf mode off · headlock cleared</small>
+      </button>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading compact">
+        <div class="section-title"><span class="glyph">◉</span> Live Execution Console</div>
+        <button class="ghost" id="clearLog">Clear</button>
+      </div>
+      <div class="console" id="console" aria-live="polite"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title"><span class="glyph">⌁</span> Wireless pairing <span class="tag">pairing code</span></div>
+      <p class="body-copy">Use Android's Wireless debugging screen to pair without a USB cable. The generated commands stay in your browser.</p>
+
+      <div class="field-grid">
+        <label>Pairing IP address<input id="pairIp" value="192.168.0.187" /></label>
+        <label>Pairing port<input id="pairPort" value="36731" /></label>
+        <label>6-digit pairing code<input id="pairCode" value="661643" inputmode="numeric" /></label>
+        <label>Connect IP<input id="connectIp" value="661643" /></label>
+        <label>Connect port<input id="connectPort" value="35983" /></label>
+      </div>
+
+      <div class="command-row">
+        <code id="pairCommand">adb pair 192.168.0.187:36731 661643</code>
+        <button class="icon-btn" data-copy="pairCommand" title="Copy">⧉</button>
+      </div>
+      <div class="command-row">
+        <code id="connectCommand">adb connect 661643:35983</code>
+        <button class="icon-btn" data-copy="connectCommand" title="Copy">⧉</button>
+      </div>
+      <div class="button-row">
+        <button class="button" id="wirelessBat">↓ Wireless .bat (Windows)</button>
+        <button class="button" id="wirelessSh">↓ Wireless .sh (Mac/Linux)</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title"><span class="glyph">›_</span> Manual runner</div>
+      <p class="body-copy">No WebUSB, or prefer your own terminal? Copy a one-liner or use the ready-made scripts.</p>
+      <div class="button-row">
+        <button class="button" id="copyEnable">⧉ Copy enable command</button>
+        <button class="button" id="copyReset">⧉ Copy reset command</button>
+        <button class="button" id="downloadBat">↓ quest-tweak.bat</button>
+        <button class="button" id="downloadSh">↓ quest-tweak.sh</button>
+      </div>
+      <pre class="code-block" id="tweakCode"></pre>
+    </section>
+
+    <section class="panel">
+      <div class="section-title"><span class="glyph">▣</span> Key Mapper <span class="tag">on-device key mapping</span></div>
+      <div class="mapping-card">
+        <div><span class="mapping-label">HEAD FLY</span><strong>Left X → Fly Up</strong><small>Hold Left X to fly upward · release X to stop</small></div>
+        <span class="key-chip">X</span>
+      </div>
+      <ol class="steps">
+        <li>Download the latest Key Mapper APK from its official release page.</li>
+        <li>Keep your device connected above, then choose <b>Choose APK & install</b> to push it over USB.</li>
+        <li>Open Key Mapper and grant the accessibility permission it asks for.</li>
+        <li>Create a mapping (for example, a controller button to a key event) and save it.</li>
+      </ol>
+      <button class="button" id="releaseBtn">↗ Key Mapper releases</button>
+    </section>
+
+    <section class="panel accordion-panel">
+      <button class="accordion"><span><span class="glyph">◉</span> Enable USB debugging</span><span>⌄</span></button>
+      <div class="accordion-body">
+        <button class="sub-accordion">Meta Quest headset <span>⌄</span></button>
+        <div class="sub-body">Open Settings → System → Developer, enable Developer Mode, then approve the USB debugging prompt when connecting.</div>
+        <button class="sub-accordion">Generic Android phone or tablet <span>⌄</span></button>
+        <div class="sub-body">Enable Developer options, turn on USB debugging, connect the cable, and accept the RSA authorization prompt.</div>
+        <button class="sub-accordion">Device not showing up? <span>⌄</span></button>
+        <div class="sub-body">Try another data cable, reconnect the device, unlock the screen, and check that the browser supports WebUSB.</div>
+      </div>
+    </section>
+
+    <footer>Runs entirely in your browser · no files are uploaded · commands go straight down the cable.</footer>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
